@@ -22,7 +22,9 @@ rules:
     - 130
   quotes:
     - error
-    - double
+    - single
   semi:
     - error
     - always
+  sort-keys:
+    - error

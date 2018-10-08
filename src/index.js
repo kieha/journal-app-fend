@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-filename-extension */
 
-import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import h from 'react-hyperscript';
+import App from './components/App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(h(App), document.getElementById('root'));
