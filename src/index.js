@@ -1,7 +1,13 @@
-/* eslint-disable react/jsx-filename-extension */
-
-import ReactDOM from 'react-dom';
+import { render } from 'react-dom';
+import { applyMiddleware, createStore, compose } from 'redux';
+import thunk from 'redux-thunk';
+import logger from 'redux-logger';
+import { Provider } from 'react-redux';
 import h from 'react-hyperscript';
-import App from './components/App';
+import rootReducer from './reducers';
+import Journal from './components/Journal';
 
-ReactDOM.render(h(App), document.getElementById('root'));
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; //eslint-disable-line
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, logger)));
+
+render(h(Provider, { store }, h(Journal)), document.getElementById('root'));

@@ -2,35 +2,22 @@
 /* eslint-disable no-underscore-dangle */
 
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import request from 'superagent';
 import Moment from 'react-moment';
 import swal from 'sweetalert2';
-import DeleteEntryButton from './DeleteEntryButton';
-import EmptyEntries from './EmptyEntries';
-import Form from './Form';
-import JournalTitle from './JournalTitle';
+import DeleteEntryButton from '../DeleteEntryButton';
+import EmptyEntries from '../EmptyEntries';
+import Form from '../Form';
+import JournalTitle from '../JournalTitle';
 
-const styles = {
-  buttonStyles: {
-    background: 'none',
-    border: 'none',
-    color: '#6495ed',
-    cursor: 'pointer',
-    fontSize: '1.75em',
-    marginBottom: 10,
-    outline: 'none',
-    textDecoration: 'dashed underline',
-  },
-};
-
-class App extends Component {
+class Journal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       editedTitle: '',
       editing: undefined,
       entry: '',
-      journalEntries: [],
       title: '',
     };
 
@@ -43,7 +30,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.fetchEntries();
+    const { fetchEntries } = this.props;
+    fetchEntries();
   }
 
   fetchEntries() {
@@ -125,9 +113,7 @@ class App extends Component {
             title: 'Success',
             type: 'success',
           });
-          this.setState({
-            editing: undefined,
-          });
+          this.stopEditing();
           this.fetchEntries();
         }
       });
@@ -141,6 +127,8 @@ class App extends Component {
 
   handleEditField() {
     const { name, value } = this.input;
+    console.log('NAME', name);
+    console.log('VALUE', value);
     this.setState({
       [name]: value,
     });
@@ -185,33 +173,12 @@ class App extends Component {
     }).catch(swal.noop);
   }
 
-  renderTitle(title, entryId) {
-    const { editing } = this.state;
-    return editing === entryId
-      ? (
-        <JournalTitle
-          editTitle={() => this.editTitle(entryId)}
-          handleEditField={this.handleEditField}
-          stopEditing={this.stopEditing}
-          inputRef={(ref) => { this.input = ref; }}
-          title={title}
-        />
-      )
-      : (
-        <button
-          onClick={() => this.editField(entryId)}
-          style={styles.buttonStyles}
-          type="button"
-        >
-          {title}
-        </button>
-      );
-  }
-
   renderJournalList() {
-    const { journalEntries } = this.state;
-    return journalEntries.length
-      ? journalEntries.map(entry => (
+    const { editing } = this.state;
+    const { entries } = this.props;
+
+    return entries.length
+      ? entries.map(entry => (
         <div className="list-group" key={entry._id} style={{ marginBottom: 20, marginTop: 20 }}>
           <div
             className="list-group-item flex-column align-items-start"
@@ -220,7 +187,15 @@ class App extends Component {
             <DeleteEntryButton
               onClick={() => this.deleteEntry(entry._id)}
             />
-            {this.renderTitle(entry.title, entry._id)}
+            <JournalTitle
+              startEditing={() => this.editField(entry._id)}
+              handleEditTitle={() => this.editTitle(entry._id)}
+              onChange={this.handleEditField}
+              stopEditing={this.stopEditing}
+              inputRef={(ref) => { this.input = ref; }}
+              isEditingTitle={editing === entry._id}
+              entryId={entry._id}
+            />
             <h6>
               Created at:
               {<Moment format="HH:mm DD/MM/YYYY">{entry.createdAt}</Moment>}
@@ -235,17 +210,11 @@ class App extends Component {
   }
 
   render() {
-    const { title, entry } = this.state;
     return (
       <div>
         <div className="jumbotron jumbotron-fluid" style={{ textAlign: 'center' }}>
           <h1>Jot It Down</h1>
-          <Form
-            entry={entry}
-            handleInputChange={this.handleInputChange}
-            handleSubmit={this.handleSubmit}
-            title={title}
-          />
+          <Form />
         </div>
 
         <div className="container-fluid">
@@ -257,4 +226,14 @@ class App extends Component {
   }
 }
 
-export default App;
+Journal.propTypes = {
+  entries: PropTypes.arrayOf(PropTypes.shape({
+    createdAt: PropTypes.string,
+    entry: PropTypes.string,
+    id: PropTypes.string,
+    title: PropTypes.string,
+  })).isRequired,
+  fetchEntries: PropTypes.func.isRequired,
+};
+
+export default Journal;

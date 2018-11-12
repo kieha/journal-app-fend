@@ -10,7 +10,11 @@
     "react-dom": "^16.5.2",
     "react-hyperscript": "^3.2.0",
     "react-moment": "^0.8.1",
+    "react-redux": "^5.0.7",
     "react-scripts": "2.0.4",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
     "superagent": "^4.0.0-beta.5",
     "sweetalert2": "^7.28.4"
   },
@@ -30,6 +34,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@babel/plugin-syntax-throw-expressions": "^7.0.0",
     "eslint": "5.6.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
